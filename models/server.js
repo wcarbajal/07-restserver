@@ -1,16 +1,19 @@
 const express = require( 'express' );
-var cors = require('cors')
+var cors = require( 'cors' );
+const { dbConnection } = require( '../database/config.db' );
 
 class Server {
 
   constructor() {
     this.app = express();
     this.port = process.env.PORT;
-    this.usuariosPath = '/api/usuarios'
-  
+    this.usuariosPath = '/api/usuarios';
+
+    // Conectar a una base de datos
+    this.conectarDB();
 
     //Middlewares
-    this.middlewares()
+    this.middlewares();
 
 
     //Rutas de mi aplicación
@@ -19,23 +22,29 @@ class Server {
 
   }
 
+  async conectarDB() {
+
+    await dbConnection();
+
+  }
+
   middlewares() {
     // CORS
-    this.app.use(cors())
+    this.app.use( cors() );
 
     // Lectura y paseo de body
-    this.app.use( express.json() )
+    this.app.use( express.json() );
 
 
     // Directorio publico
-    this.app.use( express.static('public') );
+    this.app.use( express.static( 'public' ) );
 
   }
 
   routes() {
 
-    this.app.use(this.usuariosPath, require('../routes/usuarios.route'))
-   
+    this.app.use( this.usuariosPath, require( '../routes/usuarios.route' ) );
+
 
   }
 
