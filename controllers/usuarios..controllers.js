@@ -95,10 +95,18 @@ const usuariosPut = async( req = request, res = response ) => {
 
 
 
-const usuariosDelete = ( req = request, res = response ) => {
-  res.status( 200 ).json( {
-    msg: 'delete Api - Controlador'
-  } );
+const usuariosDelete = async( req = request, res = response ) => {
+
+  const{ id }= req.params
+
+  //borramos fisicamente.
+
+  const usuario = await Usuario.findByIdAndUpdate( id, {estado:false})
+
+    res.status( 200 ).json( {
+    
+    usuario
+    } );
 };
 
 const usuariosPatch = ( req = request, res = response ) => {
