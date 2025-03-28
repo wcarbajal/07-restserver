@@ -1,74 +1,111 @@
-const { request , response } = require('express')
-const bcryptjs = require('bcryptjs')
+const { request, response } = require( 'express' );
+const bcryptjs = require( 'bcryptjs' );
 
-const Usuario = require('../models/usuario.model')
 
-const usuariosGet = ( req = request, res = response ) => {
+const Usuario = require( '../models/usuario.model' );
 
-  const {q, nombre = "No name", apikey} =req.query;
 
-    res.status(200).json( {      
-        
-    msg: 'get Api - controlador ',
-    q,
-    nombre,
-    apikey
+
+const usuariosGet = async ( req = request, res = response ) => {
+
+ 
+  const {limite = 5, desde = 0} =req.query
+  
+  
+ /*  const usuarios = await Usuario.find({
+    estado: true  })
+        .limit( +limite )
+        .skip( +desde );
+
+  const total = await Usuario.countDocuments({estado: true }); */
+  
+  const [ total, usuarios] = await Promise.all([
+    Usuario.countDocuments({estado: true }),
+    Usuario.find({
+      estado: true  })
+          .limit( +limite )
+          .skip( +desde )
+  ])
+
+  res.status( 200 ).json( {
+
+    total,
+    usuarios
 
   } );
-}
+};
 
 
-const usuariosPost =async ( req = request,  res = response ) => {
-
-  const { nombre, correo, password, rol} = req.body;
-  const usuario = new Usuario({nombre, correo, password, rol});
-
-  // verificar si el correo existe
-const salt = bcryptjs.genSaltSync();
+const usuariosPost = async ( req = request, res = response ) => {
 
 
-// encriptar de la contraseña
-usuario.password = bcryptjs.hashSync(password, salt)
+
+  const { nombre, correo, password, rol } = req.body;
+  const usuario = new Usuario( { nombre, correo, password, rol } );
+
+
+  /*   // verificar si el correo existe
+    const existeEmail = await Usuario.findOne({
+      correo
+    })
+  
+    if(existeEmail){
+      return res.status(400).json({
+        msg: 'el correo ya se encuentra registrado'
+      })
+    }
+   */
+
+  // encriptar de la contraseña
+  const salt = bcryptjs.genSaltSync();
+  usuario.password = bcryptjs.hashSync( password, salt );
 
 
   //grabar en base de datos
- await  usuario.save();
- const resulta  = usuario
+  await usuario.save();
 
- const { password: hashedPassword, ...rest } = resulta
 
- 
 
-  res.status(200).json( {        
+
+  res.status( 200 ).json( {
+
+    usuario
+  } );
+};
+
+const usuariosPut = async( req = request, res = response ) => {
+
+
+  const  id  = req.params.id;
+
+  const { _id, password, google, correo, ...resto } = req.body;
+
+  //TODO: validar contra base de datos
+  if ( password ) {
+    const salt = bcryptjs.genSaltSync();
+    resto.password = bcryptjs.hashSync( password, salt );
+  }
+  const usuario = await Usuario.findByIdAndUpdate( id, resto );
+
+  res.status( 200 ).json( {
     
-    rest
+    usuario
   } );
-}
-
-const usuariosPut = ( req = request,  res = response ) => {
-
-
-  const id = req.params.id;
-
-  res.status(200).json( {        
-    msg: 'put Api - Controlador',
-    id
-  } );
-}
+};
 
 
 
-const usuariosDelete = ( req = request,  res = response ) => {
-  res.status(200).json( {        
+const usuariosDelete = ( req = request, res = response ) => {
+  res.status( 200 ).json( {
     msg: 'delete Api - Controlador'
   } );
-} 
+};
 
-const usuariosPatch = ( req = request,  res = response ) =>  {
-  res.status(200).json( {        
+const usuariosPatch = ( req = request, res = response ) => {
+  res.status( 200 ).json( {
     msg: 'patch Api - Controlador'
   } );
-}
+};
 
 module.exports = {
   usuariosGet,
@@ -76,4 +113,4 @@ module.exports = {
   usuariosPost,
   usuariosDelete,
   usuariosPatch
-}
+};
