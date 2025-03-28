@@ -15,18 +15,18 @@ router.put( '/:id', [
   check('id', 'No es un ID válido').isMongoId(),
   check('id').custom( existeUsuarioPorId ),
   check('rol').custom( esRoleValido ),
-  check('nombre', 'El nombre debe de ser más de 3 caracteres, verifique').isLength({ min:3}), 
-  check('correo', 'El correo no es correcto, verifique').isEmail(),
+  check('nombre', 'El nombre debe de ser más de 3 caracteres').isLength({ min:3}), 
+  check('correo', 'El correo no es correcto').isEmail(),
   validarCampos
 ],  usuariosPut);
 
 router.post( '/', [
-  check('nombre', 'El nombre debe de ser más de 3 caracteres, verifique').isLength({ min:3}), 
-  check('password', 'El password debe de ser más de 6 caracteres, verifique').isLength({ min: 6}), 
-  check('correo', 'El correo no es correcto, verifique').isEmail(),
+  check('nombre', 'El nombre debe de ser más de 3 caracteres').isLength({ min:3}), 
+  check('password', 'El password debe de ser más de 6 caracteres').isLength({ min: 6}), 
+  check('correo', 'El correo no es correcto').isEmail(),
   check('correo').custom( emailExiste),
   check('rol').custom( esRoleValido ),
-  //check('rol', 'No es un rol válido, verifique').isIn(['ADMIN_ROLE', 'USER_ROLE']), 
+  //check('rol', 'No es un rol válido').isIn(['ADMIN_ROLE', 'USER_ROLE']), 
   validarCampos
   ], usuariosPost );
 
