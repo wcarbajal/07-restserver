@@ -1,6 +1,6 @@
 
 
-const Server = require( './models/sever' );
+const Server = require( './models/sever.model' );
 
 
 const server = new Server();
