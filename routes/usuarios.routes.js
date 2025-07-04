@@ -1,33 +1,20 @@
 const { Router } = require( 'express' );
-const { usuariosGet } = require( '../controllers/usuarios.controllers' );
+const { usuariosGet, usuariosPut, usuariosPost, usuariosDelete, usuariosPatch } = require( '../controllers/usuarios.controllers' );
+const { body } = require( 'express-validator' );
 
 const router = Router();
 
 
-router.get( '/', usuariosGet  );
+router.get( '/', usuariosGet );
 
-router.put( '/', ( req, res ) => {
-  res.json( {
-    msg: "put Api"
-  } );
-} );
-router.post( '/', ( req, res ) => {
-  res.json( {
-    msg: "post Api"
-  } );
-} );
-router.delete( '/', ( req, res ) => {
-  res.json( {
-    msg: "delete Api"
-  } );
-} );
-router.patch( '/', ( req, res ) => {
-  res.json( {
-    msg: "patch Api"
-  } );
-} );
+router.put( '/', usuariosPut );
 
+router.post( '/', [
+  body( 'nombre' ).isEmail()
+],  usuariosPost );
 
+router.delete( '/', usuariosDelete );
 
+router.patch( '/', usuariosPatch );
 
 module.exports = router;
